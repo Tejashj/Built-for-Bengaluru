@@ -1,100 +1,37 @@
 import 'package:flutter/material.dart';
-// Import your new screens
-import 'hosp_end/hosp_end.dart';
-import 'Patient_end/patient_end.dart';
-import 'admin_end/admin_end.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'splash_screen.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const LoginGateway(),
-        '/hospital': (context) => const HospitalPage(),
-        '/patient': (context) => const PatientPage(),
-        '/admin': (context) => const AdminPage(),
-      },
-    ),
-  );
+class AppColors {
+  static const Color appPrimary = Color(0xFF007069);
+  static const Color appSecondary = Color(0xFFC5D4E5);
+  static const Color appBackground = Color(0xFFFFFFFF);
 }
 
-class LoginGateway extends StatelessWidget {
-  const LoginGateway({super.key});
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load .env
+  await dotenv.load(fileName: ".env");
+
+  // Initialize Supabase
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+  );
+
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1A237E), Color(0xFF3949AB)],
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.health_and_safety, size: 80, color: Colors.white),
-            const SizedBox(height: 50),
-
-            // Major Button: Hospital
-            _buildMajorButton(
-              context,
-              "HOSPITAL LOGIN",
-              Icons.local_hospital,
-              '/hospital',
-            ),
-            const SizedBox(height: 20),
-
-            // Major Button: Patient
-            _buildMajorButton(
-              context,
-              "PATIENT LOGIN",
-              Icons.person,
-              '/patient',
-            ),
-            const SizedBox(height: 50),
-
-            // Minor Button: Admin
-            TextButton.icon(
-              onPressed: () => Navigator.pushNamed(context, '/admin'),
-              icon: const Icon(Icons.security, color: Colors.white70),
-              label: const Text(
-                "Admin End",
-                style: TextStyle(color: Colors.white70),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMajorButton(
-    BuildContext context,
-    String label,
-    IconData icon,
-    String route,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: SizedBox(
-        width: double.infinity,
-        height: 60,
-        child: ElevatedButton.icon(
-          onPressed: () => Navigator.pushNamed(context, route),
-          icon: Icon(icon),
-          label: Text(label),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: const Color(0xFF1A237E),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-          ),
-        ),
-      ),
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
     );
   }
 }
