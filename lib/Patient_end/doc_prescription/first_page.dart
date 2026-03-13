@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'camera_page.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class Doctor_Homepage extends StatelessWidget {
+  const Doctor_Homepage({super.key});
 
   @override
   Widget build(BuildContext context) {

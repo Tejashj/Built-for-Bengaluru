@@ -3,13 +3,11 @@ import 'package:skit_bfb/Patient_end/ambs.dart';
 import 'package:skit_bfb/Patient_end/diet_screen.dart';
 import 'package:skit_bfb/Patient_end/doc_prescription/first_page.dart';
 import 'package:skit_bfb/Patient_end/healthupdates.dart';
+import 'package:skit_bfb/Patient_end/medflow_splash.dart';
 import 'package:skit_bfb/Patient_end/take_appointment.dart';
-import 'hosp_end/hosp_end.dart';
-import 'admin_end/admin_end.dart';
 import 'hosp_list.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'splash_screen.dart';
 
 class AppColors {
   static const Color appPrimary = Color(0xFF007069);
@@ -39,13 +37,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      home: const MedFlowLoadingScreen(),
 
-      routes: {
-        '/hospital': (context) => const HealthUpdatePage(),
-        '/patient': (context) => const TakeAppointmentPage(),
-        '/admin': (context) => const PatientDietScreen(),
-      },
+      
     );
   }
 }

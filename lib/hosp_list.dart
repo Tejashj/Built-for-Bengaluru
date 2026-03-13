@@ -1,9 +1,18 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+class Hospital {
+  final String name;
+  final double lat;
+  final double lon;
+  final double distance;
+
+  Hospital(this.name, this.lat, this.lon, this.distance);
+}
 
 class HospitalMapPage extends StatefulWidget {
   const HospitalMapPage({super.key});
@@ -14,135 +23,196 @@ class HospitalMapPage extends StatefulWidget {
 
 class _HospitalMapPageState extends State<HospitalMapPage> {
 
-  GoogleMapController? _mapController;
+  LatLng? userLocation;
 
-  Set<Marker> _markers = {};
+  List<Marker> hospitalMarkers = [];
+  List<Hospital> hospitals = [];
 
-  Position? _currentPosition;
-
-  static const Color appPrimary = Color(0xFF007069);
+  final MapController mapController = MapController();
 
   @override
   void initState() {
     super.initState();
-    _loadLocation();
+    _getLocation();
   }
 
-  Future<void> _loadLocation() async {
+  Future<void> _getLocation() async {
 
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
-    if (!serviceEnabled) {
-      throw Exception("Location services disabled");
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
+    LocationPermission permission = await Geolocator.requestPermission();
 
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
     setState(() {
-      _currentPosition = position;
+      userLocation = LatLng(position.latitude, position.longitude);
     });
 
-    _addUserMarker();
-
-    await _fetchHospitals();
-  }
-
-  void _addUserMarker() {
-
-    if (_currentPosition == null) return;
-
-    _markers.add(
-      Marker(
-        markerId: const MarkerId("user"),
-        position: LatLng(
-          _currentPosition!.latitude,
-          _currentPosition!.longitude,
-        ),
-        infoWindow: const InfoWindow(title: "Your Location"),
-        icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueBlue),
-      ),
-    );
+    _fetchHospitals();
   }
 
   Future<void> _fetchHospitals() async {
 
-    String apiKey = dotenv.env['PLACES_API_KEY']!;
+    if (userLocation == null) return;
 
-    final url =
-        "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
-        "?location=${_currentPosition!.latitude},${_currentPosition!.longitude}"
-        "&radius=5000&type=hospital&key=$apiKey";
+    double lat = userLocation!.latitude;
+    double lon = userLocation!.longitude;
 
-    final response = await http.get(Uri.parse(url));
+    String query = """
+    [out:json];
+    node["amenity"="hospital"](around:5000,$lat,$lon);
+    out;
+    """;
 
-    if (response.statusCode == 200) {
+    final response = await http.post(
+      Uri.parse("https://overpass-api.de/api/interpreter"),
+      body: query,
+    );
 
-      final data = json.decode(response.body);
+    final data = json.decode(response.body);
 
-      for (var hospital in data["results"]) {
+    List<Marker> markers = [];
+    List<Hospital> hospitalList = [];
 
-        final lat = hospital["geometry"]["location"]["lat"];
-        final lng = hospital["geometry"]["location"]["lng"];
+    for (var h in data["elements"]) {
 
-        _markers.add(
-          Marker(
-            markerId: MarkerId(hospital["place_id"]),
-            position: LatLng(lat, lng),
-            infoWindow: InfoWindow(
-              title: hospital["name"],
-              snippet: hospital["vicinity"],
-            ),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueRed),
+      double hLat = h["lat"];
+      double hLon = h["lon"];
+
+      String name = h["tags"]?["name"] ?? "Hospital";
+
+      double distance = Geolocator.distanceBetween(
+        lat,
+        lon,
+        hLat,
+        hLon,
+      );
+
+      hospitalList.add(Hospital(name, hLat, hLon, distance));
+
+      markers.add(
+        Marker(
+          point: LatLng(hLat, hLon),
+          width: 40,
+          height: 20,
+          child: const Icon(
+            Icons.local_hospital,
+            color: Color(0xFF007069),
+            size: 30,
           ),
-        );
-      }
-
-      setState(() {});
+        ),
+      );
     }
+
+    hospitalList.sort((a, b) => a.distance.compareTo(b.distance));
+
+    setState(() {
+      hospitalMarkers = markers;
+      hospitals = hospitalList.take(6).toList();
+    });
+  }
+
+  void _focusHospital(Hospital hospital) {
+
+    mapController.move(
+      LatLng(hospital.lat, hospital.lon),
+      16,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
 
-    if (_currentPosition == null) {
+    if (userLocation == null) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
+
       appBar: AppBar(
         title: const Text("Nearby Hospitals"),
-        backgroundColor: appPrimary,
+        backgroundColor: const Color(0xFF007069),
       ),
 
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: LatLng(
-            _currentPosition!.latitude,
-            _currentPosition!.longitude,
+      body: Column(
+        children: [
+
+          // 🔹 MAP SECTION
+          Expanded(
+            flex: 1,
+            child: FlutterMap(
+
+              mapController: mapController,
+
+              options: MapOptions(
+                initialCenter: userLocation!,
+                initialZoom: 16,
+              ),
+
+              children: [
+
+                TileLayer(
+                  urlTemplate:
+                      "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  userAgentPackageName: "com.example.skit_bfb",
+                ),
+
+                MarkerLayer(
+                  markers: [
+
+                    Marker(
+                      point: userLocation!,
+                      width: 40,
+                      height: 20,
+                      child: const Icon(
+                        Icons.my_location,
+                        color: Color.fromARGB(255, 124, 1, 1),
+                        size: 30,
+                      ),
+                    ),
+
+                    ...hospitalMarkers
+                  ],
+                ),
+
+              ],
+            ),
           ),
-          zoom: 14,
-        ),
 
-        markers: _markers,
+          // 🔹 HOSPITAL LIST SECTION
+          Expanded(
+            flex: 1,
+            child: ListView.builder(
 
-        myLocationEnabled: true,
+              itemCount: hospitals.length,
 
-        myLocationButtonEnabled: true,
+              itemBuilder: (context, index) {
 
-        onMapCreated: (controller) {
-          _mapController = controller;
-        },
+                final hospital = hospitals[index];
+
+                return ListTile(
+
+                  leading: const Icon(
+                    Icons.local_hospital,
+                    color: Color(0xFF007069),
+                  ),
+
+                  title: Text(hospital.name),
+
+                  subtitle: Text(
+                    "${(hospital.distance / 1000).toStringAsFixed(2)} km away",
+                  ),
+
+                  onTap: () {
+                    _focusHospital(hospital);
+                  },
+                );
+              },
+            ),
+          ),
+
+        ],
       ),
     );
   }
