@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skit_bfb/Patient_end/healthupdates.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../patient_dashboard/dashboard.dart';
 
@@ -37,7 +38,7 @@ class _PatientLoginPageState extends State<PatientLoginPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const PatientDashboard(),
+            builder: (context) => const HealthUpdatePage(),
           ),
         );
       }

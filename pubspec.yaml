@@ -23,6 +23,7 @@ dependencies:
   web3dart: ^2.7.3
   geolocator: ^14.0.2
   google_maps_flutter: ^2.15.0
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
