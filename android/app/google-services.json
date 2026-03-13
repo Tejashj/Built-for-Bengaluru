@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "643401413853",
+    "project_id": "skit-bfb",
+    "storage_bucket": "skit-bfb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:643401413853:android:aff767cdc17d4feb09d734",
+        "android_client_info": {
+          "package_name": "com.example.skit_bfb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQX5joJkI2FK2Vp7rwmL9bVmtx-4Pjnac"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
