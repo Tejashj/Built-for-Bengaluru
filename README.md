@@ -58,5 +58,5 @@ Prescription AI     text_recognition_page.dart            Extracting text from u
 Notifications             notif.dart                      Handling push notifications for appointments and meds.
 Identity               patient_end.dart                   Root wrapper for the patient-side navigation logic.
 
-🛡 Security & ComplianceData Encryption: All patient data is transmitted over HTTPS via Supabase.Row Level Security (RLS): Database policies ensure patients can only view their own records.
+Security & ComplianceData Encryption: All patient data is transmitted over HTTPS via Supabase.Row Level Security (RLS): Database policies ensure patients can only view their own records.
 
