@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skit_bfb/Patient_end/chatbot.dart';
 import 'dart:ui';
 import 'patient_login.dart';
 import 'patient_signup.dart';
@@ -78,7 +79,7 @@ class PatientPage extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const DummySettingsPage()),
+            MaterialPageRoute(builder: (context) => const ModernMedicalChatbot()),
           );
         },
       ),

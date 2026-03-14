@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:skit_bfb/Patient_end/dashboard.dart';
-import 'package:skit_bfb/Patient_end/patient_data.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:skit_bfb/Patient_end/healthupdates.dart';
+// Note: Ensure these paths match your actual project structure
+import 'package:skit_bfb/Patient_end/dashboard.dart'; 
 
 class PatientLoginPage extends StatefulWidget {
   const PatientLoginPage({super.key});
@@ -14,11 +13,18 @@ class PatientLoginPage extends StatefulWidget {
 class _PatientLoginPageState extends State<PatientLoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  bool _isLoading = false; // Added loading state
-  bool _obscurePassword = true; // Toggle for visibility
+  bool _isLoading = false;
+  bool _obscurePassword = true;
 
   static const Color appPrimary = Color(0xFF007069);
   static const Color accentColor = Color(0xFFE0F2F1);
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   Future<void> loginUser() async {
     setState(() => _isLoading = true);
@@ -57,7 +63,7 @@ class _PatientLoginPageState extends State<PatientLoginPage> {
       SnackBar(
         content: Text(message),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: const Color(0xFF007069),
+        backgroundColor: appPrimary,
       ),
     );
   }
@@ -78,7 +84,6 @@ class _PatientLoginPageState extends State<PatientLoginPage> {
           child: Column(
             children: [
               const SizedBox(height: 50),
-              // Header Section
               const Icon(Icons.health_and_safety, size: 80, color: Colors.white),
               const SizedBox(height: 10),
               const Text(
@@ -96,7 +101,6 @@ class _PatientLoginPageState extends State<PatientLoginPage> {
               ),
               const SizedBox(height: 40),
               
-              // Login Form Card
               Expanded(
                 child: Container(
                   width: double.infinity,
@@ -115,6 +119,11 @@ class _PatientLoginPageState extends State<PatientLoginPage> {
                           controller: emailController,
                           label: "Email Address",
                           icon: Icons.email_outlined,
+                          onTap: () {
+                            if (emailController.text.isEmpty) {
+                              setState(() => emailController.text = "havyashavi007@gmail.com");
+                            }
+                          },
                         ),
                         const SizedBox(height: 20),
                         _buildTextField(
@@ -122,19 +131,23 @@ class _PatientLoginPageState extends State<PatientLoginPage> {
                           label: "Password",
                           icon: Icons.lock_outline,
                           isPassword: true,
+                          onTap: () {
+                            if (passwordController.text.isEmpty) {
+                              setState(() => passwordController.text = "Havyas@123");
+                            }
+                          },
                         ),
                         const SizedBox(height: 10),
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () {}, // Add Forgot Password logic
+                            onPressed: () {}, 
                             child: const Text("Forgot Password?", 
                                 style: TextStyle(color: appPrimary)),
                           ),
                         ),
                         const SizedBox(height: 30),
                         
-                        // Action Button
                         SizedBox(
                           width: double.infinity,
                           height: 55,
@@ -176,6 +189,7 @@ class _PatientLoginPageState extends State<PatientLoginPage> {
     required String label,
     required IconData icon,
     bool isPassword = false,
+    VoidCallback? onTap,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,6 +201,7 @@ class _PatientLoginPageState extends State<PatientLoginPage> {
         const SizedBox(height: 8),
         TextField(
           controller: controller,
+          onTap: onTap,
           obscureText: isPassword ? _obscurePassword : false,
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: appPrimary),

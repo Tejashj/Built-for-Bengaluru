@@ -28,6 +28,9 @@ dependencies:
   flutter_map: ^6.1.0
   latlong2: ^0.9.0
   lottie: ^3.3.2
+  speech_to_text: ^7.3.0
+  animate_do: ^4.2.0
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -41,3 +44,9 @@ flutter:
     - .env
     - assets/medflow_app_logo.png
     
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/medflow_logo.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_background: "#0xFF000000" # Matches your app's primary teal

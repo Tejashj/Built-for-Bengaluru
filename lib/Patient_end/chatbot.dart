@@ -3,212 +3,263 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:animate_do/animate_do.dart';
 
-// A simple data class for a chat message
+// --- DATA MODEL ---
 class ChatMessage {
   final String text;
   final bool isUser;
-
   ChatMessage({required this.text, required this.isUser});
 }
 
-class MedicalChatbotPage extends StatefulWidget {
-  const MedicalChatbotPage({super.key});
+class ModernMedicalChatbot extends StatefulWidget {
+  const ModernMedicalChatbot({super.key});
 
   @override
-  State<MedicalChatbotPage> createState() => _MedicalChatbotPageState();
+  State<ModernMedicalChatbot> createState() => _ModernMedicalChatbotState();
 }
 
-class _MedicalChatbotPageState extends State<MedicalChatbotPage> {
-  // --- Credentials & Config ---
-  final String _apiKey = dotenv.env['GEMINI_API_KEY']!;
+class _ModernMedicalChatbotState extends State<ModernMedicalChatbot> {
+  // API Config
+  final String _apiKey = dotenv.env['GEMINI_API_KEY'] ?? "";
   final String _apiUrl =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
+      "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent";
 
-  // --- State Variables ---
+  // Controllers & State
   final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
   bool _isLoading = false;
+
+  // Voice Engines
+  late stt.SpeechToText _speech;
+  late FlutterTts _tts;
+  bool _isListening = false;
+
+  // Theme Colors
+  static const Color appPrimary = Color(0xFF007069);
+  static const Color appAccent = Color(0xFFC5D4E5);
 
   @override
   void initState() {
     super.initState();
-    _messages.add(
-      ChatMessage(
-        text:
-            "Hello! I am your personal medical assistant. How can I help you today?",
-        isUser: false,
-      ),
-    );
+    _speech = stt.SpeechToText();
+    _tts = FlutterTts();
+    _initVoice();
+    
+    _messages.add(ChatMessage(
+      text: "Hello! I am your AI medical assistant. You can type or speak your symptoms.",
+      isUser: false,
+    ));
   }
 
+  void _initVoice() async {
+    await _tts.setLanguage("en-US");
+    await _tts.setPitch(1.0);
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  // --- LOGIC: SEND MESSAGE ---
   Future<void> _sendMessage() async {
     final String userMessage = _controller.text.trim();
-    if (userMessage.isEmpty) {
-      return;
-    }
+    if (userMessage.isEmpty) return;
 
     setState(() {
       _messages.add(ChatMessage(text: userMessage, isUser: true));
       _isLoading = true;
     });
-
     _controller.clear();
+    _scrollToBottom();
 
     try {
       final response = await http.post(
         Uri.parse('$_apiUrl?key=$_apiKey'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          "systemInstruction": {
-            "parts": [
-              {
-                "text":
-                    "You are a helpful and compassionate medical assistant chatbot. "
-                    "Your purpose is to provide general medical information and support in a clear, easy-to-understand manner. "
-                    "You are not a doctor. "
-                    "** provide remedies to the problem **"
-                    "*Strictly limit your response to be between 100 and 150 words.* "
-                    "IMPORTANT: You MUST end every single response with the following disclaimer, exactly as written, on a new line: "
-                    "'Disclaimer: I am an AI assistant and not a medical professional. Please consult a qualified healthcare provider for any medical advice, diagnosis, or treatment.'",
-              },
-            ],
-          },
-          "contents": _buildConversationHistory(userMessage),
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "INSTRUCTIONS: You are a compassionate medical assistant. Provide general medical info and remedies. Limit to 100-150 words.'\n\nQUESTION: $userMessage"
+                }
+              ]
+            }
+          ],
           "generationConfig": {
-            "temperature": 0.0, // Makes the output deterministic
+            "temperature": 0.7,
+            "maxOutputTokens": 800,
           },
         }),
       );
 
       if (response.statusCode == 200) {
-        final decodedResponse = jsonDecode(response.body);
-        final botResponse =
-            decodedResponse['candidates'][0]['content']['parts'][0]['text'];
-
+        final decoded = jsonDecode(response.body);
+        final botText = decoded['candidates'][0]['content']['parts'][0]['text'];
         setState(() {
-          _messages.add(ChatMessage(text: botResponse, isUser: false));
+          _messages.add(ChatMessage(text: botText, isUser: false));
         });
+        // Voice response
+        await _tts.speak(botText);
       } else {
-        _showError(
-          "Failed to get response from AI. Status code: ${response.statusCode}\nBody: ${response.body}",
-        );
+        _showError("Error ${response.statusCode}");
       }
     } catch (e) {
-      _showError("An error occurred: $e");
+      _showError("Connection Error: $e");
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
+      _scrollToBottom();
     }
   }
 
-  List<Map<String, dynamic>> _buildConversationHistory(String currentMessage) {
-    final List<Map<String, dynamic>> contents = [];
-    contents.add({
-      "role": "user",
-      "parts": [
-        {"text": currentMessage},
-      ],
-    });
-    return contents;
+  // --- LOGIC: VOICE ---
+  Future<void> _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize();
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(onResult: (val) {
+          setState(() {
+            _controller.text = val.recognizedWords;
+          });
+        });
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech.stop();
+      if (_controller.text.isNotEmpty) _sendMessage();
+    }
   }
 
   void _showError(String message) {
-    setState(() {
-      _messages.add(ChatMessage(text: "Error: $message", isUser: false));
-    });
+    setState(() => _messages.add(ChatMessage(text: "Alert: $message", isUser: false)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFB),
       appBar: AppBar(
-        title: const Text("MediBot"),
-        backgroundColor: const Color.fromARGB(255, 1, 19, 17),
-        foregroundColor: Colors.white,
-        titleTextStyle: GoogleFonts.quicksand(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: Column(
+          children: [
+            Text("MediBot AI", style: GoogleFonts.poppins(color: appPrimary, fontWeight: FontWeight.bold, fontSize: 18)),
+            Text("Online • 2026 Edition", style: GoogleFonts.poppins(color: Colors.green, fontSize: 10)),
+          ],
         ),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return _buildMessageBubble(message);
-              },
-            ),
-          ),
-          if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: LinearProgressIndicator(
-                color: Color.fromARGB(255, 9, 14, 13),
+          Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.only(bottom: 100, left: 16, right: 16, top: 10),
+                  itemCount: _messages.length,
+                  itemBuilder: (context, index) => FadeInUp(
+                    duration: const Duration(milliseconds: 400),
+                    child: _buildModernBubble(_messages[index]),
+                  ),
+                ),
               ),
-            ),
-          _buildInputArea(),
+            ],
+          ),
+          if (_isLoading) 
+            const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(color: appPrimary, backgroundColor: Colors.transparent)),
+          _buildFloatingInput(),
         ],
       ),
     );
   }
 
-  Widget _buildMessageBubble(ChatMessage message) {
+  Widget _buildModernBubble(ChatMessage msg) {
     return Align(
-      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: msg.isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5.0),
-        padding: const EdgeInsets.all(12.0),
+        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: message.isUser ? Colors.teal : Colors.grey[200],
-          borderRadius: BorderRadius.circular(15.0),
+          color: msg.isUser ? appPrimary : Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(20),
+            topRight: const Radius.circular(20),
+            bottomLeft: Radius.circular(msg.isUser ? 20 : 0),
+            bottomRight: Radius.circular(msg.isUser ? 0 : 20),
+          ),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 5))
+          ],
         ),
-        child: SelectableText(
-          message.text,
-          style: TextStyle(
-            color: message.isUser ? Colors.white : Colors.black87,
+        child: Text(
+          msg.text,
+          style: GoogleFonts.inter(
+            color: msg.isUser ? Colors.white : Colors.black87,
+            fontSize: 15,
+            height: 1.4,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildInputArea() {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        boxShadow: const [
-          BoxShadow(
-            offset: Offset(0, -1),
-            blurRadius: 3,
-            color: Colors.black12,
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _controller,
-              decoration: const InputDecoration.collapsed(
-                hintText: "Ask a medical question...",
+  Widget _buildFloatingInput() {
+    return Positioned(
+      bottom: 20,
+      left: 15,
+      right: 15,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(35),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20)],
+        ),
+        child: Row(
+          children: [
+            IconButton(
+              icon: Icon(_isListening ? Icons.mic : Icons.mic_none, color: _isListening ? Colors.red : appPrimary),
+              onPressed: _listen,
+            ),
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                onSubmitted: (_) => _sendMessage(),
+                style: GoogleFonts.inter(fontSize: 15),
+                decoration: const InputDecoration(
+                  hintText: "Describe symptoms...",
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                ),
               ),
-              onSubmitted: (_) => _sendMessage(),
             ),
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.send,
-              color: Color.fromARGB(255, 14, 16, 16),
+            GestureDetector(
+              onTap: _isLoading ? null : _sendMessage,
+              child: CircleAvatar(
+                backgroundColor: appPrimary,
+                child: _isLoading 
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  : const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+              ),
             ),
-            onPressed: _isLoading ? null : _sendMessage,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
