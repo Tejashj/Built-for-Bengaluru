@@ -10,7 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AppColors {
-  static const Color appPrimary = Color.fromRGBO(0, 112, 105, 1);
+  static const Color appPrimary = Color(0xFF007069);
   static const Color appSecondary = Color(0xFFC5D4E5);
   static const Color appBackground = Color(0xFFFFFFFF);
 }

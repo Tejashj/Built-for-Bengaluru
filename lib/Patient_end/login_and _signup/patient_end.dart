@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skit_bfb/Patient_end/chatbot.dart';
+import 'package:skit_bfb/Patient_end/voice_agent_page.dart';
 import 'dart:ui';
 import 'patient_login.dart';
 import 'patient_signup.dart';
@@ -34,12 +35,7 @@ class PatientPage extends StatelessWidget {
           const Positioned.fill(child: _MedicalBackgroundPainter()),
 
           // 2. Top Navigation Button (The New Addition)
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 10,
-            right: 20,
-            child: _buildTopButton(context),
-          ),
-
+          
           // 3. Main Content
           SafeArea(
             child: Padding(
@@ -67,24 +63,7 @@ class PatientPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTopButton(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white, width: 1.5),
-      ),
-      child: IconButton(
-        icon: const Icon(Icons.settings_outlined, color: appPrimary),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ModernMedicalChatbot()),
-          );
-        },
-      ),
-    );
-  }
+  
 
   // ... rest of your header, card, and button builders remain the same ...
   // (Included below for completeness of the file structure)

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:intl/intl.dart'; // Add intl to your pubspec.yaml
+import 'package:intl/intl.dart'; 
 
 class MedicalTrackerPage extends StatefulWidget {
   const MedicalTrackerPage({super.key});
