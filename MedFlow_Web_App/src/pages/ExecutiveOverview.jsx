@@ -53,26 +53,41 @@ const ExecutiveOverview = () => {
     fetchDashboardData();
   }, []);
 
-  // --- 4. ROBUST AGENT JSON PARSER ---
+  // --- 4. POLISHED AGENT JSON PARSER ---
   const parseAiReport = (backendJson) => {
     if (!backendJson) return null;
 
-    // Helper function to remove markdown Python code blocks so the UI looks clean
-    const stripCodeBlocks = (str) => {
+    // 🔥 THE MEMO SHREDDER: Removes code blocks and roleplay formatting 🔥
+    const cleanAiText = (str) => {
       if (typeof str !== 'string') return '';
-      // Removes anything between ``` and ```
-      return str.replace(/```[\s\S]*?```/g, '').trim();
+      return str
+        .replace(/```[\s\S]*?```/g, '') // Remove Python code blocks
+        .replace(/FINAL HOSPITAL COMMAND[\s\S]*?EXECUTIVE SUMMARY/i, '') // Remove TO/FROM/SUBJECT headers
+        .replace(/ACKNOWLEDGMENT[\s\S]*/i, '') // Delete the entire signature block at the bottom
+        .replace(/EFFECTIVE DATE[\s\S]*?(?=\n\n|$)/i, '') // Delete effective date boilerplate
+        .replace(/ACTION ITEMS[\s\S]*?(?=\n\n|$)/i, '') // Delete action item boilerplate
+        .replace(/MONITORING AND EVALUATION[\s\S]*?(?=\n\n|$)/i, '') // Delete monitoring boilerplate
+        .replace(/IMPLEMENTATION PLAN/i, '') // Remove unnecessary heading
+        .replace(/\*\*/g, '') // Strip all markdown asterisks
+        .replace(/\n{3,}/g, '\n\n') // Collapse excessive line breaks into standard paragraphs
+        .trim();
     };
 
-    // If we receive the new structured JSON from your teammate's backend
     if (backendJson.status === "success" && backendJson.data) {
       const d = backendJson.data;
       
-      const summaryText = stripCodeBlocks(d.final_decision) || stripCodeBlocks(d.demand_prediction);
-      const seasonalText = stripCodeBlocks(d.seasonal_disease_prediction);
-      const emergencyText = stripCodeBlocks(d.emergency_status);
-      const staffText = stripCodeBlocks(d.staff_plan);
-      const allocationText = stripCodeBlocks(d.allocation_plan);
+      // Clean all inputs
+      let summaryText = cleanAiText(d.final_decision) || cleanAiText(d.demand_prediction);
+      const seasonalText = cleanAiText(d.seasonal_disease_prediction);
+      const emergencyText = cleanAiText(d.emergency_status);
+      const staffText = cleanAiText(d.staff_plan);
+      const allocationText = cleanAiText(d.allocation_plan);
+
+      // Force the Executive Summary to actually be a summary (Take only the first paragraph)
+      if (summaryText) {
+        const paragraphs = summaryText.split('\n\n');
+        summaryText = paragraphs[0]; // Just grab the concise intro
+      }
 
       return {
         summary: summaryText || "Analysis completed by backend agents.",
@@ -88,7 +103,7 @@ const ExecutiveOverview = () => {
       };
     }
 
-    // 🔥 FALLBACK MODE 🔥: If the backend sends something completely unrecognizable
+    // Fallback mode if backend structure changes
     return {
       summary: typeof backendJson === 'string' ? backendJson : JSON.stringify(backendJson, null, 2),
       findings: [],
@@ -120,10 +135,8 @@ const ExecutiveOverview = () => {
 
         if (!response.ok) throw new Error(`Backend returned ${response.status}`);
         
-        // The backend is now sending JSON, so we parse it directly
         const rawData = await response.json();
         
-        // Save raw object to cache and parse it into UI
         sessionStorage.setItem('aiReportCache', JSON.stringify(rawData));
         setParsedAiData(parseAiReport(rawData));
 
@@ -140,10 +153,8 @@ const ExecutiveOverview = () => {
 
   // --- 6. RENDER HELPER ---
   const renderFindingCard = (finding, idx) => {
-    // Check for critical keywords in the text
-    const isCritical = finding.includes("100%") || finding.toLowerCase().includes("emergency");
+    const isCritical = finding.includes("100%") || finding.toLowerCase().includes("emergency") || finding.toLowerCase().includes("high risk");
     
-    // Split the title from the body (e.g. "Seasonal Disease Watch:" -> Title)
     let title = "Insight";
     let description = finding;
     
@@ -156,12 +167,12 @@ const ExecutiveOverview = () => {
     return (
       <div key={idx} className={`p-4 rounded-lg border ${isCritical ? 'bg-rose-50 border-rose-200' : 'bg-slate-50 border-slate-200'}`}>
         <div className="flex items-start gap-3">
-          {isCritical ? <AlertCircle className="text-rose-600 mt-0.5" size={18} flexShrink={0} /> : <Info className="text-slate-500 mt-0.5" size={18} flexShrink={0} />}
-          <div>
+          <div className="w-full">
             <h4 className={`text-sm font-bold ${isCritical ? 'text-rose-800' : 'text-slate-800'}`}>{title}</h4>
-            <p className={`text-sm mt-1 leading-relaxed ${isCritical ? 'text-rose-700' : 'text-slate-600'} whitespace-pre-wrap`}>
-              {description.replace(/\*\*/g, '') /* Clean up leftover bold markers */}
-            </p>
+            {/* Added max-h and scrollbar so huge agent outputs don't break the UI */}
+            <div className={`mt-1.5 text-sm leading-relaxed ${isCritical ? 'text-rose-700' : 'text-slate-600'} whitespace-pre-wrap max-h-[250px] overflow-y-auto pr-2`}>
+              {description}
+            </div>
           </div>
         </div>
       </div>
@@ -239,7 +250,6 @@ const ExecutiveOverview = () => {
             <div className="h-20 flex items-center justify-center text-slate-400 text-sm">Waiting for prediction models...</div>
           ) : (
             
-            // IF BACKEND SENDS UNKNOWN JSON (Fallback Mode)
             parsedAiData.isFallback ? (
               <div className="bg-slate-50 p-6 rounded-lg border border-slate-200">
                 <div className="flex items-center gap-2 text-slate-500 mb-3 font-bold text-sm">
@@ -250,13 +260,12 @@ const ExecutiveOverview = () => {
                 </pre>
               </div>
             ) : (
-              // NORMAL STRUCTURED RENDER
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
                   <div>
                     <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Executive Summary</h4>
-                    <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100 whitespace-pre-wrap">
-                      {parsedAiData.summary.replace(/\*\*/g, '')}
+                    <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100">
+                      {parsedAiData.summary}
                     </p>
                   </div>
 
@@ -284,9 +293,12 @@ const ExecutiveOverview = () => {
                         return (
                           <div key={idx} className="p-4 hover:bg-slate-50 transition-colors flex gap-3">
                             <CheckCircle2 className="text-emerald-500 flex-shrink-0 mt-0.5" size={18} />
-                            <div>
+                            <div className="w-full">
                               <span className="text-sm font-bold text-slate-800">{title}:</span>
-                              <p className="text-sm text-slate-600 mt-1 whitespace-pre-wrap leading-relaxed">{actionText.replace(/\*\*/g, '')}</p>
+                              {/* Added max-h and scrollbar here as well */}
+                              <div className="text-sm text-slate-600 mt-1.5 whitespace-pre-wrap leading-relaxed max-h-[300px] overflow-y-auto pr-2">
+                                {actionText}
+                              </div>
                             </div>
                           </div>
                         );
