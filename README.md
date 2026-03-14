@@ -60,14 +60,14 @@ graph LR
 
 ### 🖥️ Web Command Center (Administrators)
 <p align="center">
-  <img src="./MedFlow_Web_App/demo.gif" alt="Web Dashboard Demo" width="100%" style="max-width: 800px;" />
+  <img src="./MedFlow_Web_App/screenshots/demo.gif" alt="Web Dashboard Demo" width="100%" style="max-width: 900px;" />
   <br/>
   <em>🏥 Real-time bed tracking + AI bottleneck predictions</em>
 </p>
 
 ### 📱 Patient Mobile Experience
 <p align="center">
-  <img src="./MedFlow_Mobile_App/demo.gif" alt="Mobile App Demo" width="300" />
+  <img src="./MedFlow_Mobile_App/screenshots/demo.gif" alt="Mobile App Demo" width="300" />
   <br/>
   <em>🗣️ Voice booking + 📄 OCR scanning + 🚨 One-tap SOS</em>
 </p>
@@ -121,19 +121,25 @@ sequenceDiagram
 
 ## 📸 Unified Screenshots
 
+> 💡 **Format Note**: Web screenshots use `.png` | Mobile screenshots use `.jpeg` | Animations use `.gif`
+
 <p align="center">
   <table>
     <tr>
-      <td align="center"><strong>🖥️ Admin Dashboard</strong><br/><img src="./MedFlow_Web_App/dashboard.png" width="350" alt="Web Dashboard"/></td>
-      <td align="center"><strong>📱 Patient Home</strong><br/><img src="./MedFlow_Mobile_App/dashboard.png" width="175" alt="Mobile Dashboard"/></td>
+      <td align="center"><strong>🖥️ Admin Dashboard</strong><br/><img src="./MedFlow_Web_App/screenshots/dashboard.png" width="350" alt="Web Dashboard"/></td>
+      <td align="center"><strong>📱 Patient Home</strong><br/><img src="./MedFlow_Mobile_App/screenshots/dashboard.jpeg" width="175" alt="Mobile Dashboard"/></td>
     </tr>
     <tr>
-      <td align="center"><strong>🛏️ Bed Inventory (Web)</strong><br/><img src="./MedFlow_Web_App/bed-inventory.png" width="350" alt="Bed Management"/></td>
-      <td align="center"><strong>📅 Booking Flow (Mobile)</strong><br/><img src="./MedFlow_Mobile_App/booking.png" width="175" alt="Appointment Booking"/></td>
+      <td align="center"><strong>🛏️ Bed Inventory (Web)</strong><br/><img src="./MedFlow_Web_App/screenshots/bed-inventory.png" width="350" alt="Bed Management"/></td>
+      <td align="center"><strong>📅 Booking Flow (Mobile)</strong><br/><img src="./MedFlow_Mobile_App/screenshots/booking.jpeg" width="175" alt="Appointment Booking"/></td>
     </tr>
     <tr>
-      <td align="center"><strong>🤖 AI Alerts Panel</strong><br/><img src="./MedFlow_Web_App/ai-predictions.png" width="350" alt="AI Insights"/></td>
-      <td align="center"><strong>📄 OCR Scanner</strong><br/><img src="./MedFlow_Mobile_App/ocr_scanner.png" width="175" alt="Prescription Scan"/></td>
+      <td align="center"><strong>🤖 AI Alerts Panel</strong><br/><img src="./MedFlow_Web_App/screenshots/ai-predictions.png" width="350" alt="AI Insights"/></td>
+      <td align="center"><strong>📄 OCR Scanner</strong><br/><img src="./MedFlow_Mobile_App/screenshots/ocr_scanner.jpeg" width="175" alt="Prescription Scan"/></td>
+    </tr>
+    <tr>
+      <td align="center"><strong>🎙️ Voice Concierge</strong><br/><img src="./MedFlow_Mobile_App/screenshots/voice_agent.jpeg" width="175" alt="Voice Agent"/></td>
+      <td align="center"><strong>🚨 Emergency SOS</strong><br/><img src="./MedFlow_Mobile_App/screenshots/sos.jpeg" width="175" alt="Emergency Screen"/></td>
     </tr>
   </table>
 </p>
@@ -159,42 +165,48 @@ sequenceDiagram
 
 ### 📋 Prerequisites
 ```bash
-# Core
-Node.js ≥ 18.x    | Flutter SDK ≥ 3.0.x    | Python ≥ 3.11
-npm/yarn          | Android Studio/Xcode   | pip + virtualenv
+# Core Requirements
+Node.js ≥ 18.x          # Web frontend
+Flutter SDK ≥ 3.0.x     # Mobile app  
+Python ≥ 3.11           # AI backend
 
-# Accounts (Free Tiers OK)
-✅ Supabase Project  ✅ Google Gemini API Key  ✅ (Optional) Firebase for mobile push
+# Package Managers
+npm/yarn                # Web dependencies
+flutter pub             # Mobile dependencies
+pip + virtualenv        # Python dependencies
+
+# External Accounts (Free Tiers OK ✅)
+✅ Supabase Project     ✅ Google Gemini API Key  ✅ (Optional) Firebase for push notifications
 ```
 
 ### 🔧 Step 1: Clone & Configure
 ```bash
 # Clone the monorepo
-git clone https://github.com/your-username/Built-for-Bengaluru.git
+git clone https://github.com/your-username/Built-for-Bengaluru.git  
 cd Built-for-Bengaluru
 
-# Copy environment templates
+# Copy environment templates for all three apps
 cp MedFlow_Web_App/.env.example MedFlow_Web_App/.env
 cp MedFlow_Mobile_App/.env.example MedFlow_Mobile_App/.env
 cp MedFlow_API/.env.example MedFlow_API/.env
 ```
 
 ### 🔑 Step 2: Configure Shared Credentials
-Edit all three `.env` files with:
+Edit all three `.env` files with your credentials:
 ```env
-# Supabase (from your project dashboard)
-VITE_SUPABASE_URL=your_project_url      # Web
-SUPABASE_URL=your_project_url           # Mobile + API
-VITE_SUPABASE_ANON_KEY=your_anon_key    # Web
-SUPABASE_ANON_KEY=your_anon_key         # Mobile + API
+# 🔷 Supabase Configuration (from your project dashboard)
+VITE_SUPABASE_URL=your_project_url        # Web App
+SUPABASE_URL=your_project_url             # Mobile + API
+VITE_SUPABASE_ANON_KEY=your_anon_key      # Web App  
+SUPABASE_ANON_KEY=your_anon_key           # Mobile + API
 
-# AI Services
-VITE_GEMINI_API_KEY=your_gemini_key     # Web
-GEMINI_API_KEY=your_gemini_key          # Mobile + API
+# 🤖 AI Services Configuration
+VITE_GEMINI_API_KEY=your_gemini_key       # Web App
+GEMINI_API_KEY=your_gemini_key            # Mobile + API
 
-# API Base URL (for local dev)
-VITE_API_BASE_URL=http://localhost:8000 # Web
-API_BASE_URL=http://10.0.2.2:8000       # Mobile (Android emulator)
+# 🔗 API Base URL (for local development)
+VITE_API_BASE_URL=http://localhost:8000   # Web App
+API_BASE_URL=http://10.0.2.2:8000         # Mobile (Android emulator localhost)
 ```
 
 ### 🖥️ Step 3: Launch the Web Command Center
@@ -202,7 +214,7 @@ API_BASE_URL=http://10.0.2.2:8000       # Mobile (Android emulator)
 cd MedFlow_Web_App
 npm install
 npm run dev
-# → Opens at http://localhost:5173
+# → Opens at http://localhost:5173 with hot-reload enabled ✨
 ```
 
 ### 📱 Step 4: Launch the Patient Mobile App
@@ -210,7 +222,7 @@ npm run dev
 cd ../MedFlow_Mobile_App
 flutter pub get
 flutter run
-# → Launches on connected emulator/device
+# → Launches on connected emulator or physical device 📲
 ```
 
 ### ⚙️ Step 5: (Optional) Run the AI Backend Locally
@@ -220,7 +232,7 @@ python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn main:app --reload
-# → API available at http://localhost:8000/docs
+# → Interactive API docs available at http://localhost:8000/docs 📚
 ```
 
 > ✅ **Success Check**: Book an appointment on mobile → Watch the web dashboard update instantly. That's the MedFlow magic! 🎯
@@ -232,25 +244,40 @@ uvicorn main:app --reload
 ```
 Built-for-Bengaluru/
 ├── README.md                          # ← You are here! (Master Guide)
-├── LICENSE
+├── LICENSE                            # MIT License
 │
 ├── 🖥️ MedFlow_Web_App/               # Administrator Command Center
 │   ├── README.md                      # Detailed web setup guide
-│   ├── demo.gif                       # Hero animation
+│   ├── screenshots/                   # 📸 All images stored here
+│   │   ├── demo.gif                   # 🎬 Hero animation (web)
+│   │   ├── dashboard.png              # 🎛️ Executive dashboard
+│   │   ├── bed-inventory.png          # 🛏️ Bed management view
+│   │   ├── ai-predictions.png         # 🤖 AI alerts panel
+│   │   ├── auth.png                   # 🔐 Login/registration
+│   │   └── hackathon-badge.png        # 🏆 Event badge
 │   ├── src/
-│   │   ├── components/                # BedCard, AlertBanner, StatWidget
-│   │   ├── pages/                     # Dashboard, Inventory, Admissions
-│   │   └── services/                  # supabase.ts, gemini.ts, api.ts
+│   │   ├── components/                # Reusable UI components
+│   │   ├── pages/                     # Route views
+│   │   └── services/                  # API clients
 │   ├── package.json
-│   └── vite.config.ts
+│   ├── vite.config.ts
+│   └── .env.example
 │
 ├── 📱 MedFlow_Mobile_App/            # Patient Mobile Experience
 │   ├── README.md                      # Detailed mobile setup guide
-│   ├── demo.gif                       # Hero animation
+│   ├── screenshots/                   # 📸 All images stored here
+│   │   ├── demo.gif                   # 🎬 Hero animation (mobile)
+│   │   ├── dashboard.jpeg             # 🏠 Patient home screen
+│   │   ├── booking.jpeg               # 📅 Appointment flow
+│   │   ├── ocr_scanner.jpeg           # 📄 OCR interface
+│   │   ├── voice_agent.jpeg           # 🎙️ Voice concierge
+│   │   ├── sos.jpeg                   # 🚨 Emergency screen
+│   │   ├── pharmacy.jpeg              # 💊 Pharmacy finder
+│   │   └── hackathon-badge.png        # 🏆 Event badge
 │   ├── lib/
-│   │   ├── features/                  # appointments/, ocr/, emergency/
-│   │   ├── core/                      # services/, utils/, widgets/
-│   │   └── main.dart                  # App entry + Supabase init
+│   │   ├── features/                  # Feature modules
+│   │   ├── core/                      # Shared utilities
+│   │   └── main.dart                  # App entry point
 │   ├── pubspec.yaml
 │   └── android/ios/                   # Platform configs
 │
@@ -262,7 +289,8 @@ Built-for-Bengaluru/
     │   ├── voice_processor.py         # STT/TTS + intent parsing
     │   └── ocr_pipeline.py            # Prescription digitization
     ├── models/                        # Pydantic schemas
-    └── requirements.txt
+    ├── requirements.txt
+    └── .env.example
 ```
 
 ---
@@ -272,26 +300,27 @@ Built-for-Bengaluru/
 ```bash
 # 🔍 Web App Tests
 cd MedFlow_Web_App
-npm run test          # Unit + integration
-npm run typecheck     # TypeScript validation
-npm run lint          # ESLint + Prettier
+npm run test                    # Unit + integration tests
+npm run typecheck               # TypeScript validation
+npm run lint && npm run format  # ESLint + Prettier
 
 # 📱 Mobile App Tests  
 cd ../MedFlow_Mobile_App
-flutter test          # Unit + widget tests
-flutter test integration_test/app_test.dart  # E2E flow
-flutter analyze       # Dart analyzer
+flutter test                                # Unit + widget tests
+flutter test integration_test/app_test.dart # End-to-end flow
+flutter analyze                             # Dart static analysis
 
 # ⚙️ API Tests
 cd ../MedFlow_API
-pytest tests/         # Pytest suite
-curl http://localhost:8000/health  # Health check
+pytest tests/                   # Pytest suite
+curl http://localhost:8000/health  # Health check endpoint
 
-# 🌐 End-to-End Validation
-# 1. Start all three services locally
-# 2. Book appointment on mobile → Verify web dashboard update
-# 3. Scan prescription → Confirm structured data in admin view
-# 4. Trigger SOS → Check alert appears in web emergency panel
+# 🌐 End-to-End Validation Checklist
+# ✅ Start all three services locally
+# ✅ Book appointment on mobile → Verify web dashboard updates instantly
+# ✅ Scan prescription via OCR → Confirm structured data appears in admin view  
+# ✅ Trigger SOS alert → Check notification appears in web emergency panel
+# ✅ Test AI prediction → Verify proactive alerts on both platforms
 ```
 
 ---
@@ -306,8 +335,9 @@ curl http://localhost:8000/health  # Health check
 | **Data at Rest** | Supabase encrypted storage + field-level encryption | AES-256 |
 | **AI Processing** | On-device OCR/voice where possible; anonymized payloads to Gemini | Privacy-by-Design |
 | **Audit Trail** | All critical actions logged with user ID, timestamp, device fingerprint | HIPAA-ready logging |
+| **Access Control** | Role-based permissions + multi-tenant isolation | RBAC + ABAC |
 
-> ⚠️ **Prototype Disclaimer**: This hackathon submission demonstrates technical feasibility. Production deployment requires: HIPAA/GDPR compliance review, clinical validation, medical oversight approval, and penetration testing.
+> ⚠️ **Prototype Disclaimer**: This hackathon submission demonstrates technical feasibility. Production deployment requires: HIPAA/GDPR compliance review, clinical validation, medical oversight approval, and third-party penetration testing.
 
 ---
 
@@ -326,24 +356,29 @@ graph LR
   G --> H[Merge to Main]
 ```
 
-### 📝 Guidelines
-- **Web App**: Follow React + TypeScript conventions; use `feat/`, `fix/`, `chore/` prefixes
-- **Mobile App**: Adhere to Flutter style guide; include widget tests for UI changes  
-- **API**: Use Pydantic models; add OpenAPI docs for new endpoints
-- **All**: Update relevant README sections; include screenshots for UX changes
+### 📝 Contribution Guidelines
+| Component | Guidelines |
+|-----------|-----------|
+| **Web App** | Follow React + TypeScript conventions; use `feat/`, `fix/`, `chore/` prefixes; include Storybook stories for new components |
+| **Mobile App** | Adhere to Flutter style guide; include widget tests for UI changes; test on both Android & iOS |
+| **API** | Use Pydantic models; add OpenAPI docs for new endpoints; include pytest coverage |
+| **Documentation** | Update relevant README sections; include before/after screenshots for UX changes |
 
 ### 🎯 Good First Issues
-- `web: Add dark mode toggle to dashboard`  
-- `mobile: Implement Hindi voice support`
-- `api: Cache Gemini responses to reduce latency`
-- `docs: Add architecture decision records (ADRs)`
+```
+🔹 web: Add dark mode toggle to dashboard
+🔹 mobile: Implement Hindi voice support for AI concierge  
+🔹 api: Cache Gemini responses to reduce latency & costs
+🔹 docs: Add architecture decision records (ADRs)
+🔹 tests: Increase E2E coverage for appointment booking flow
+```
 
 ---
 
 ## 🏆 Built for Bengaluru Hackathon 2024
 
 <p align="center">
-  <img src="./hackathon-badge.png" alt="Built for Bengaluru 2024" width="220" />
+  <img src="./MedFlow_Web_App/screenshots/hackathon-badge.png" alt="Built for Bengaluru 2024" width="220" />
 </p>
 
 | Category | Details |
@@ -351,16 +386,16 @@ graph LR
 | **Track** | 🏥 HealthTech / 🤖 AI for Social Good |
 | **Problem** | Fragmented hospital data → overcrowding, delayed care, staff burnout |
 | **Solution** | Unified platform connecting admin oversight with patient empowerment |
-| **Innovation** | Realtime sync + predictive AI + voice/OCR accessibility |
-| **Impact** | 40% faster triage, 30% reduction in no-shows, proactive bottleneck prevention |
+| **Innovation** | Realtime sync + predictive AI + voice/OCR accessibility + offline-first design |
+| **Impact** | 40% faster triage • 30% reduction in no-shows • Proactive bottleneck prevention |
 
 **Team**  
 👤 `@your-handle` — Full Stack + AI Integration  
-👤 `@teammate-handle` — Flutter Mobile + UX  
-👤 `@another-handle` — Backend + DevOps  
+👤 `@teammate-handle` — Flutter Mobile + UX Design  
+👤 `@another-handle` — Backend + DevOps + Infrastructure  
 
 **Submission Assets**  
-🎥 [Demo Video Link] • 🎨 [Figma Prototype] • 📊 [Pitch Deck] • 🔗 [Live Deployment]
+🎥 [Demo Video Link] • 🎨 [Figma Prototype] • 📊 [Pitch Deck PDF] • 🔗 [Live Deployment URL]
 
 ---
 
@@ -373,13 +408,30 @@ MIT License
 
 Copyright (c) 2024 MedFlow Team
 
-Permission is hereby granted... [full license text in LICENSE file]
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
 
 ### 🙏 Acknowledgements
-- 🙌 Built for Bengaluru organizers & mentors  
-- 🤝 Supabase, Google Gemini, and Flutter teams for incredible developer tools  
-- 🏥 Healthcare advisors who validated our problem space  
+- 🙌 Built for Bengaluru organizers, mentors, and judging panel  
+- 🤝 Supabase, Google Gemini, Flutter, and FastAPI teams for incredible developer tools  
+- 🏥 Healthcare advisors and hospital partners who validated our problem space  
+- 💡 Open-source community for libraries that accelerated our development  
 
 ---
 
@@ -393,3 +445,36 @@ Permission is hereby granted... [full license text in LICENSE file]
   <a href="./MedFlow_Mobile_App/README.md">📱 Mobile App Docs</a> • 
   <a href="./MedFlow_API/README.md">⚙️ API Docs</a>
 </p>
+
+---
+
+## 📁 Screenshot Reference (Master Guide)
+
+```
+✅ Expected Image Structure for GitHub Rendering:
+
+Built-for-Bengaluru/
+├── README.md                          # ← Master README (this file)
+│
+├── MedFlow_Web_App/
+│   ├── screenshots/                   # 👈 Web images (.png + .gif)
+│   │   ├── demo.gif                   # 🎬 10-sec hero animation
+│   │   ├── dashboard.png              # 🎛️ Executive view
+│   │   ├── bed-inventory.png          # 🛏️ Hierarchical beds
+│   │   ├── ai-predictions.png         # 🤖 Forecasting panel
+│   │   ├── auth.png                   # 🔐 Auth flow
+│   │   └── hackathon-badge.png        # 🏆 Badge (PNG for transparency)
+│   └── README.md
+│
+└── MedFlow_Mobile_App/
+    ├── screenshots/                   # 👈 Mobile images (.jpeg + .gif)
+    │   ├── demo.gif                   # 🎬 10-sec hero animation
+    │   ├── dashboard.jpeg             # 🏠 Home screen
+    │   ├── booking.jpeg               # 📅 Appointment flow
+    │   ├── ocr_scanner.jpeg           # 📄 Prescription scanner
+    │   ├── voice_agent.jpeg           # 🎙️ Voice UI
+    │   ├── sos.jpeg                   # 🚨 Emergency screen
+    │   ├── pharmacy.jpeg              # 💊 Pharmacy map
+    │   └── hackathon-badge.png        # 🏆 Badge (PNG for transparency)
+    └── README.md
+```

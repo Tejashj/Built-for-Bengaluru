@@ -11,16 +11,23 @@
   <a href="#-contributing"><strong>Contributing</strong></a>
 </p>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Framework-React_18-61DAFB?style=for-the-badge&logo=react" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Backend-Supabase-3ECF8E?style=for-the-badge&logo=supabase" alt="Supabase">
+</p>
+
 ---
 
 ## 🎬 Animation / Live Demo
 
 <p align="center">
-  <img src="./demo.gif" alt="MedFlow Dashboard Demo" width="100%" />
+  <img src="./screenshots/demo.gif" alt="MedFlow Dashboard Demo" width="100%" style="max-width: 900px;" />
   <br/>
   <em>✨ Watch MedFlow predict capacity bottlenecks in real-time</em>
 </p>
 
+---
 
 ## ✨ Features
 
@@ -49,27 +56,49 @@
 
 ## 📸 Demo & Screenshots
 
+> 💡 **Note**: All static screenshots use `.png` format. Demo animation uses `.gif`.
+
 <details open>
 <summary><strong>🎛️ Executive Dashboard & AI Predictions</strong></summary>
 
-![Dashboard](./dashboard.png)
-*Real-time occupancy heatmaps + AI-generated risk forecasts*
+<p align="center">
+  <img src="./screenshots/dashboard.png" alt="Executive Dashboard" width="100%" style="max-width: 800px;" />
+  <br/>
+  <em>Real-time occupancy heatmaps + AI-generated risk forecasts</em>
+</p>
 
 </details>
 
 <details>
 <summary><strong>🛏️ Bed Inventory Drill-Down</strong></summary>
 
-![Bed Inventory](./bed-inventory.png)
-*Click any department to view granular bed-level status*
+<p align="center">
+  <img src="./screenshots/bed-inventory.png" alt="Bed Inventory View" width="100%" style="max-width: 800px;" />
+  <br/>
+  <em>Click any department to view granular bed-level status</em>
+</p>
+
+</details>
+
+<details>
+<summary><strong>🤖 AI Predictions Panel</strong></summary>
+
+<p align="center">
+  <img src="./screenshots/ai-predictions.png" alt="AI Predictions" width="100%" style="max-width: 800px;" />
+  <br/>
+  <em>Capacity forecasting with proactive bottleneck alerts</em>
+</p>
 
 </details>
 
 <details>
 <summary><strong>🔐 Secure Organization Authentication</strong></summary>
 
-![Auth Flow](./auth.png)
-*Multi-tenant onboarding with Supabase Auth + RBAC*
+<p align="center">
+  <img src="./screenshots/auth.png" alt="Authentication Flow" width="100%" style="max-width: 800px;" />
+  <br/>
+  <em>Multi-tenant onboarding with Supabase Auth + RBAC</em>
+</p>
 
 </details>
 
@@ -109,7 +138,7 @@ graph LR
 
 ```bash
 # 1️⃣ Clone & navigate
-git clone https://github.com/your-username/Built-for-Bengaluru.git
+git clone https://github.com/your-username/Built-for-Bengaluru.git  
 cd Built-for-Bengaluru/MedFlow_Web_App
 
 # 2️⃣ Install frontend dependencies
@@ -146,20 +175,26 @@ uvicorn main:app --reload
 
 ```
 MedFlow_Web_App/
+├── screenshots/                 # 👈 All images stored here
+│   ├── demo.gif                 # 🎬 Hero animation
+│   ├── dashboard.png            # 🎛️ Executive dashboard
+│   ├── bed-inventory.png        # 🛏️ Bed management view
+│   ├── ai-predictions.png       # 🤖 AI alerts panel
+│   ├── auth.png                 # 🔐 Login/registration
+│   └── hackathon-badge.png      # 🏆 Event badge
 ├── public/
-│   ├── demo.gif          # 🎬 Hero animation for README & onboarding
 │   └── favicon.svg
 ├── src/
-│   ├── components/       # Reusable UI: BedCard, AlertBanner, StatWidget
-│   ├── pages/            # Route views: Dashboard, Inventory, Admissions
-│   ├── services/         # API clients: supabase.ts, gemini.ts, api.ts
-│   ├── store/            # State: occupancyStore.ts, authStore.ts (Zustand)
-│   ├── utils/            # Helpers: formatters.ts, cache.ts, validators.ts
+│   ├── components/              # Reusable UI: BedCard, AlertBanner, StatWidget
+│   ├── pages/                   # Route views: Dashboard, Inventory, Admissions
+│   ├── services/                # API clients: supabase.ts, gemini.ts, api.ts
+│   ├── store/                   # State: occupancyStore.ts, authStore.ts (Zustand)
+│   ├── utils/                   # Helpers: formatters.ts, cache.ts, validators.ts
 │   └── App.tsx
-├── .env.example          # Template for environment variables
+├── .env.example                 # Template for environment variables
 ├── package.json
 ├── vite.config.ts
-└── README.md             # ← You are here!
+└── README.md                    # ← You are here!
 ```
 
 ---
@@ -200,7 +235,7 @@ We welcome hackathon collaborators! 🙌
 ## 🏆 Built for Bengaluru Hackathon
 
 <p align="center">
-  <img src="./hackathon-badge.png" alt="Built for Bengaluru 2024" width="200" />
+  <img src="./screenshots/hackathon-badge.png" alt="Built for Bengaluru 2024" width="200" />
 </p>
 
 **Team**: `@your-handle` • `@teammate-handle` • `@another-handle`  
@@ -221,3 +256,28 @@ Distributed under the MIT License. See [`LICENSE`](./LICENSE) for more informati
   <strong>Made with ❤️ for smarter healthcare</strong><br/>
   <sub>🏥 MedFlow • Optimizing hospital operations, one bed at a time</sub>
 </p>
+
+---
+
+> 💬 **Ready to see the patient experience?**  
+> 👉 Check out the [📱 MedFlow Mobile App](../MedFlow_Mobile_App/README.md) for the patient-facing interface.  
+> 🔗 Together, they form a unified hospital-patient intelligence platform.
+
+---
+
+## 📁 Screenshot Reference (Web)
+
+```
+MedFlow_Web_App/
+├── screenshots/
+│   ├── demo.gif                 # 🎬 Hero animation (10-sec dashboard walkthrough)
+│   ├── dashboard.png            # 🎛️ Executive dashboard with AI predictions
+│   ├── bed-inventory.png        # 🛏️ Hierarchical bed management view
+│   ├── ai-predictions.png       # 🤖 AI alerts & capacity forecasting panel
+│   ├── auth.png                 # 🔐 Organization login/registration screen
+│   └── hackathon-badge.png      # 🏆 Event badge (PNG for transparency)
+├── README.md                    # ← This file
+├── src/
+├── package.json
+└── ...
+```

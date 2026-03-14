@@ -22,11 +22,12 @@
 ## 🎬 Live Demo
 
 <p align="center">
-  <img src="./demo.gif" alt="MedFlow Mobile App Demo" width="300" />
+  <img src="./screenshots/demo.gif" alt="MedFlow Mobile App Demo" width="300" />
   <br/>
   <em>✨ Navigate appointments, scan prescriptions & get AI help — all hands-free</em>
 </p>
 
+---
 
 ## ✨ Core Features
 
@@ -69,17 +70,19 @@
 
 ## 📸 Demo & Screenshots
 
+> 💡 **Note**: All static screenshots use `.jpeg` format. Demo animation uses `.gif`.
+
 <p align="center">
   <table>
     <tr>
-      <td align="center"><strong>🎙️ AI Voice Concierge</strong><br/><img src="./voice_agent.jpeg" width="250" alt="Voice Agent"/></td>
-      <td align="center"><strong>📅 Smart Booking</strong><br/><img src="./booking.jped" width="250" alt="Appointment Flow"/></td>
-      <td align="center"><strong>📄 OCR Scanner</strong><br/><img src="./ocr_scanner.jpeg" width="250" alt="Prescription Scan"/></td>
+      <td align="center"><strong>🎙️ AI Voice Concierge</strong><br/><img src="./screenshots/voice_agent.jpeg" width="250" alt="Voice Agent"/></td>
+      <td align="center"><strong>📅 Smart Booking</strong><br/><img src="./screenshots/booking.jpeg" width="250" alt="Appointment Flow"/></td>
+      <td align="center"><strong>📄 OCR Scanner</strong><br/><img src="./screenshots/ocr_scanner.jpeg" width="250" alt="Prescription Scan"/></td>
     </tr>
     <tr>
-      <td align="center"><strong>🏠 Patient Dashboard</strong><br/><img src="./dashboard.jpeg" width="250" alt="Home Dashboard"/></td>
-      <td align="center"><strong>🚨 Emergency SOS</strong><br/><img src="./sos.jpeg" width="250" alt="Emergency Screen"/></td>
-      <td align="center"><strong>💊 Pharmacy Finder</strong><br/><img src="./pharmacy.jpeg" width="250" alt="Pharmacy Map"/></td>
+      <td align="center"><strong>🏠 Patient Dashboard</strong><br/><img src="./screenshots/dashboard.jpeg" width="250" alt="Home Dashboard"/></td>
+      <td align="center"><strong>🚨 Emergency SOS</strong><br/><img src="./screenshots/sos.jpeg" width="250" alt="Emergency Screen"/></td>
+      <td align="center"><strong>💊 Pharmacy Finder</strong><br/><img src="./screenshots/pharmacy.jpeg" width="250" alt="Pharmacy Map"/></td>
     </tr>
   </table>
 </p>
@@ -164,7 +167,7 @@ lib/
 
 ```bash
 # 1️⃣ Clone & navigate
-git clone https://github.com/your-username/Built-for-Bengaluru.git
+git clone https://github.com/your-username/Built-for-Bengaluru.git  
 cd Built-for-Bengaluru/MedFlow_Mobile_App
 
 # 2️⃣ Install dependencies
@@ -256,7 +259,7 @@ Hackathon collaborators welcome! 🙌
 ## 🏆 Built for Bengaluru Hackathon
 
 <p align="center">
-  <img src="./hackathon-badge.png" alt="Built for Bengaluru 2024" width="200" />
+  <img src="./screenshots/hackathon-badge.png" alt="Built for Bengaluru 2024" width="200" />
 </p>
 
 **Team**: `@your-handle` • `@teammate-handle` • `@another-handle`  
@@ -284,3 +287,24 @@ Distributed under the MIT License. See [`LICENSE`](../LICENSE) for details.
 > 💬 **Ready to see the full ecosystem?**  
 > 👉 Check out the [🏥 MedFlow Web Command Center](../MedFlow_Web_App/README.md) for the administrator view.  
 > 🔗 Together, they form a unified hospital-patient intelligence platform.
+
+---
+
+## 📁 Screenshot Reference (Mobile)
+
+```
+MedFlow_Mobile_App/
+├── screenshots/
+│   ├── demo.gif              # 🎬 Hero animation (10-sec walkthrough)
+│   ├── dashboard.jpeg        # 🏠 Patient home screen
+│   ├── booking.jpeg          # 📅 Appointment booking flow
+│   ├── ocr_scanner.jpeg      # 📄 Prescription OCR interface
+│   ├── voice_agent.jpeg      # 🎙️ AI voice concierge UI
+│   ├── sos.jpeg              # 🚨 Emergency SOS screen
+│   ├── pharmacy.jpeg         # 💊 Pharmacy finder map
+│   └── hackathon-badge.png   # 🏆 Event badge (PNG for logo)
+├── README.md                 # ← This file
+├── lib/
+├── pubspec.yaml
+└── ...
+```
